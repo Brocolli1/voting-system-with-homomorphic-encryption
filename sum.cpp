@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
           Ctxt c3 = c1 + c2;
 
           ofstream outCtxtFile;
-          outCtxtFile.open("ctxt.json", std::ios::out);
+          outCtxtFile.open("sum.json", std::ios::out);
           if (outCtxtFile.is_open()) {
             // Write the ctxt to a file
             c3.writeToJSON(outCtxtFile);

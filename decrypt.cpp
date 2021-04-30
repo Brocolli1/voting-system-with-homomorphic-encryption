@@ -16,26 +16,6 @@
 using namespace helib;
 using namespace std;
 
-Context context =
-
-      // initialize a Context object using the builder pattern
-      ContextBuilder<CKKS>()
-          .m(16 * 1024)
-          .bits(119)
-          .precision(20)
-          .c(2)
-          .build();
-SecKey secretKey(context);
-secretKey.GenSecKey();
-const PubKey& publicKey = secretKey;
-
-Ctxt encrypt(PtxtArray ptxt, PubKey publicKey)
-{
-
-    Ctxt result(publicKey);
-    ptxt.encrypt(result);
-    return result;
-}
 int main(int argc, char* argv[])
 {
   std::ifstream inContextFile;
@@ -63,7 +43,7 @@ int main(int argc, char* argv[])
         PtxtArray pp4(context);
 
         // Next, we decrypt c3, storing the plaintext in p3:
-        pp4.decrypt(c4, secretKey);
+        pp4.decrypt(c1, sdeserializedecretKey);
 
         // Finally, we store the PtxtArray p3 into a standard vector v3:
         vector<double> v4;
@@ -87,36 +67,6 @@ int main(int argc, char* argv[])
   } else {
     throw std::runtime_error("Could not open file 'context.json'.");
   }
-
-  //===========================================================================
-
-  // Now we homorphically compute c3 = c0*c1 + c2*1.5:
-  Ctxt c3 = c1 + c2;
- 
-  PtxtArray pp4(context);
-
-  // Next, we decrypt c3, storing the plaintext in p3:
-  pp4.decrypt(c4, secretKey);
-
-  // Finally, we store the PtxtArray p3 into a standard vector v3:
-  vector<double> v4;
-  pp4.store(v4);
-
-  // Next we decrypt c3.
-  // First, we construct a new PtxtArray pp3.
-  PtxtArray pp3(context);
-
-  // Next, we decrypt c3, storing the plaintext in p3:
-  pp3.decrypt(c3, secretKey);
-
-  // Finally, we store the PtxtArray p3 into a standard vector v3:
-  vector<double> v3;
-  pp3.store(v3);
-
-  //===========================================================================
-
-    cout<<v3.back()<<endl<<v4.back()<<endl;
-
 
   return 0;
 }
