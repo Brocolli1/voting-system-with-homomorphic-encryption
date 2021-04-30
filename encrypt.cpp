@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2021 IBM Corp.
+/* 
  * This program is Licensed under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -20,72 +20,55 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 
-  Context context =
+  std::ifstream inContextFile;
+  inContextFile.open("context.json");
+  if (inContextFile.is_open()) {
+    // Read in the context from the file
+    helib::Context context =
+        helib::Context::readFromJSON(inContextFile);
 
-      // initialize a Context object using the builder pattern
-      ContextBuilder<CKKS>()
-          .m(16 * 1024)
-          .bits(119)
-          .precision(20)
-          .c(2)
-          .build();
 
-  
-  SecKey secretKey(context);
-  secretKey.GenSecKey();
-  const PubKey& publicKey = secretKey;
-
+      ifstream inPublicKeyFile;
+  inPublicKeyFile.open("pk.json");
+  if (inPublicKeyFile.is_open()) {
+    // Read in the public key from the file
+    helib::PubKey publicKey =
+        helib::PubKey::readFromJSON(inPublicKeyFile, context);
     
-    PtxtArray p2(context);
-    p2 = 7;
-    Ctxt c2(publicKey);
-    p2.encrypt(c2);
+      PtxtArray p2(context);
+      if(argc > 1)
+        p2 = atoi(argv[1]);
+      else 
+        p2 = 7;
+      Ctxt c2(publicKey);
+      p2.encrypt(c2);
 
-  //===========================================================================
 
- ofstream outContextFile;
-  outContextFile.open("context.json", std::ios::out);
-  if (outContextFile.is_open()) {
-    // Write the context to a file
-    context.writeToJSON(outContextFile);
-    // Close the ofstream
-    outContextFile.close();
-  } else {
-    throw std::runtime_error("Could not open file 'context.json'.");
-  }
-  
-  ofstream outSecretKeyFile;
-  outSecretKeyFile.open("sk.json", std::ios::out);
-  if (outSecretKeyFile.is_open()) {
-    // Write the secret key to a file
-    secretKey.writeToJSON(outSecretKeyFile);
-    // Close the ofstream
-    outSecretKeyFile.close();
-  } else {
-    throw std::runtime_error("Could not open file 'sk.json'.");
-  }
+        ofstream outCtxtFile;
+      outCtxtFile.open("newVote.json", std::ios::out);
+      if (outCtxtFile.is_open()) {
+        // Write the ctxt to a file
+        c2.writeToJSON(outCtxtFile);
+        // Close the ofstream
+        outCtxtFile.close();
+      } 
+      else {
+        throw std::runtime_error("Could not open file 'ctxt.json'.");
+      }
 
-  ofstream outPublicKeyFile;
-  outPublicKeyFile.open("pk.json", std::ios::out);
-  if (outPublicKeyFile.is_open()) {
-    // Write the public key to a file
-    publicKey.writeToJSON(outPublicKeyFile);
-    // Close the ofstream
-    outPublicKeyFile.close();
+
+    inPublicKeyFile.close();
   } else {
     throw std::runtime_error("Could not open file 'pk.json'.");
   }
 
-  ofstream outCtxtFile;
-  outCtxtFile.open("ctxt.json", std::ios::out);
-  if (outCtxtFile.is_open()) {
-    // Write the ctxt to a file
-    c2.writeToJSON(outCtxtFile);
-    // Close the ofstream
-    outCtxtFile.close();
+    // Close the ifstream
+    inContextFile.close();
   } else {
-    throw std::runtime_error("Could not open file 'ctxt.json'.");
+    throw std::runtime_error("Could not open file 'context.json'.");
   }
+
+  
 
   return 0;
 }

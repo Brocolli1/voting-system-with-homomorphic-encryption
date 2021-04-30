@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2021 IBM Corp.
+/* 
  * This program is Licensed under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
           c3 += c4; 
 
           ofstream outCtxtFile;
-          outCtxtFile.open("sum.json", std::ios::out);
+          outCtxtFile.open("votes.json", std::ios::out);
           if (outCtxtFile.is_open()) {
             // Write the ctxt to a file
             c3.writeToJSON(outCtxtFile);
