@@ -26,24 +26,35 @@ int main(int argc, char* argv[])
   inContextFile.open("context.json");
   if (inContextFile.is_open()) {
     // Read in the context from the file
-    helib::Context deserializedContext =
+    helib::Context context =
         helib::Context::readFromJSON(inContextFile);
 
-      ifstream inCtxtFile;
+
+      std::ifstream inPublicKeyFile;
+  inPublicKeyFile.open("pk.json");
+  if (inPublicKeyFile.is_open()) {
+    // Read in the public key from the file
+    helib::PubKey publicKey =
+        helib::PubKey::readFromJSON(inPublicKeyFile, context);
+    
+    ifstream inCtxtFile;
       inCtxtFile.open("votes.json", std::ios::in);
       if (inCtxtFile.is_open()) {
         // Read in the ctxt from the file
         helib::Ctxt c1 =
             helib::Ctxt::readFromJSON(inCtxtFile, publicKey);
         
-         ifstream inCtxtFile;
+         ifstream inCtxtFile2;
         inCtxtFile2.open("newVote.json", std::ios::in);
         if (inCtxtFile2.is_open()) {    
           // Read in the ctxt from the file
           helib::Ctxt c2 =
               helib::Ctxt::readFromJSON(inCtxtFile2, publicKey);
 
-          Ctxt c3 = c1 + c2;
+          Ctxt c3 = c1;
+          Ctxt c4 = c2; 
+
+          c3 += c4; 
 
           ofstream outCtxtFile;
           outCtxtFile.open("sum.json", std::ios::out);
@@ -68,6 +79,14 @@ int main(int argc, char* argv[])
       else {
         throw std::runtime_error("Could not open file 'ctxt.json'.");
       }
+    
+
+
+    // Close the ifstream
+    inPublicKeyFile.close();
+  } else {
+    throw std::runtime_error("Could not open file 'pk.json'.");
+  }
     // Close the ifstream
     inContextFile.close();
   } else {

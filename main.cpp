@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     
 
     ifstream inCtxtFile;
-      inCtxtFile.open("ctxt.json", std::ios::in);
+      inCtxtFile.open("sum.json", std::ios::in);
       if (inCtxtFile.is_open()) {
         // Read in the ctxt from the file
         helib::Ctxt c1 =
