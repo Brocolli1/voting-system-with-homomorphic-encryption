@@ -39,63 +39,58 @@ Ctxt encrypt(PtxtArray ptxt, PubKey publicKey)
 int main(int argc, char* argv[])
 {
 
-  /*Context context =
-
-      // initialize a Context object using the builder pattern
-      ContextBuilder<CKKS>()
-          .m(16 * 1024)
-          .bits(119)
-          .precision(20)
-          .c(2)
-          .build();*/
-
   
  
+  std::ifstream inContextFile;
+  inContextFile.open("context.json");
+  if (inContextFile.is_open()) {
+    // Read in the context from the file
+    helib::Context deserializedContext =
+        helib::Context::readFromJSON(inContextFile);
 
-    PtxtArray p1(context);
-    p1 = 15; 
-    /*Ctxt c1(publicKey);
-    p1.encrypt(c1);*/
-    Ctxt c1 = encrypt(p1, publicKey);
-cout<<"encrypted1"<<endl;
-    PtxtArray p2(context);
-    p2 = 7;
-    Ctxt c2(publicKey);
-    p2.encrypt(c2);
-cout<<"encrypted2"<<endl;
-  //===========================================================================
+      ifstream inCtxtFile;
+      inCtxtFile.open("votes.json", std::ios::in);
+      if (inCtxtFile.is_open()) {
+        // Read in the ctxt from the file
+        helib::Ctxt c1 =
+            helib::Ctxt::readFromJSON(inCtxtFile, publicKey);
+        
+         ifstream inCtxtFile;
+        inCtxtFile2.open("newVote.json", std::ios::in);
+        if (inCtxtFile2.is_open()) {
+          // Read in the ctxt from the file
+          helib::Ctxt c2 =
+              helib::Ctxt::readFromJSON(inCtxtFile2, publicKey);
 
-  // Now we homorphically compute c3 = c0*c1 + c2*1.5:
-  Ctxt c3 = c1;
-  c3 *= c2;
-  Ctxt c4 = c2;
-  c4 *= 1.5;
-  c3 += c4;
+          Ctxt c3 = c1 + c2;
 
-  PtxtArray pp4(context);
+          ofstream outCtxtFile;
+          outCtxtFile.open("ctxt.json", std::ios::out);
+          if (outCtxtFile.is_open()) {
+            // Write the ctxt to a file
+            c3.writeToJSON(outCtxtFile);
+            // Close the ofstream
+            outCtxtFile.close();
+          } else {
+            throw std::runtime_error("Could not open file 'ctxt.json'.");
+          }
+                  
 
-  // Next, we decrypt c3, storing the plaintext in p3:
-  pp4.decrypt(c4, secretKey);
+          inCtxtFile2.close();
+        } 
+        else {
+          throw std::runtime_error("Could not open file 'ctxt.json'.");
+        }
 
-  // Finally, we store the PtxtArray p3 into a standard vector v3:
-  vector<double> v4;
-  pp4.store(v4);
-
-  // Next we decrypt c3.
-  // First, we construct a new PtxtArray pp3.
-  PtxtArray pp3(context);
-
-  // Next, we decrypt c3, storing the plaintext in p3:
-  pp3.decrypt(c3, secretKey);
-
-  // Finally, we store the PtxtArray p3 into a standard vector v3:
-  vector<double> v3;
-  pp3.store(v3);
-
-  //===========================================================================
-
-    cout<<v3.back()<<endl<<v4.back()<<endl;
-
-
+        inCtxtFile.close();
+      } 
+      else {
+        throw std::runtime_error("Could not open file 'ctxt.json'.");
+      }
+    // Close the ifstream
+    inContextFile.close();
+  } else {
+    throw std::runtime_error("Could not open file 'context.json'.");
+  }
   return 0;
 }

@@ -38,40 +38,61 @@ Ctxt encrypt(PtxtArray ptxt, PubKey publicKey)
 }
 int main(int argc, char* argv[])
 {
+  std::ifstream inContextFile;
+  inContextFile.open("context.json");
+  if (inContextFile.is_open()) {
+    // Read in the context from the file
+    helib::Context deserializedContext =
+        helib::Context::readFromJSON(inContextFile);
 
-  /*Context context =
 
-      // initialize a Context object using the builder pattern
-      ContextBuilder<CKKS>()
-          .m(16 * 1024)
-          .bits(119)
-          .precision(20)
-          .c(2)
-          .build();*/
+    std::ifstream inSecretKeyFile;
+    inSecretKeyFile.open("sk.json");
+    if (inSecretKeyFile.is_open()) {
+      // Read in the secret key from the file
+      helib::SecKey deserializedSecretKey =
+          helib::SecKey::readFromJSON(inSecretKeyFile, context);
 
-  
- 
+      ifstream inCtxtFile;
+      inCtxtFile.open("ctxt.json", std::ios::in);
+      if (inCtxtFile.is_open()) {
+        // Read in the ctxt from the file
+        helib::Ctxt c1 =
+            helib::Ctxt::readFromJSON(inCtxtFile, publicKey);
+        
+        PtxtArray pp4(context);
 
-    PtxtArray p1(context);
-    p1 = 15; 
-    /*Ctxt c1(publicKey);
-    p1.encrypt(c1);*/
-    Ctxt c1 = encrypt(p1, publicKey);
-cout<<"encrypted1"<<endl;
-    PtxtArray p2(context);
-    p2 = 7;
-    Ctxt c2(publicKey);
-    p2.encrypt(c2);
-cout<<"encrypted2"<<endl;
+        // Next, we decrypt c3, storing the plaintext in p3:
+        pp4.decrypt(c4, secretKey);
+
+        // Finally, we store the PtxtArray p3 into a standard vector v3:
+        vector<double> v4;
+        pp4.store(v4);
+
+      cout<<v4.back()<<endl;
+
+        inCtxtFile.close();
+      } 
+      else {
+        throw std::runtime_error("Could not open file 'ctxt.json'.");
+      }
+      inSecretKeyFile.close();
+      } 
+    else {
+      throw std::runtime_error("Could not open file 'sk.json'.");
+      }
+
+    // Close the ifstream
+    inContextFile.close();
+  } else {
+    throw std::runtime_error("Could not open file 'context.json'.");
+  }
+
   //===========================================================================
 
   // Now we homorphically compute c3 = c0*c1 + c2*1.5:
-  Ctxt c3 = c1;
-  c3 *= c2;
-  Ctxt c4 = c2;
-  c4 *= 1.5;
-  c3 += c4;
-
+  Ctxt c3 = c1 + c2;
+ 
   PtxtArray pp4(context);
 
   // Next, we decrypt c3, storing the plaintext in p3:
