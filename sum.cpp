@@ -16,26 +16,7 @@
 using namespace helib;
 using namespace std;
 
-Context context =
 
-      // initialize a Context object using the builder pattern
-      ContextBuilder<CKKS>()
-          .m(16 * 1024)
-          .bits(119)
-          .precision(20)
-          .c(2)
-          .build();
-SecKey secretKey(context);
-secretKey.GenSecKey();
-const PubKey& publicKey = secretKey;
-
-Ctxt encrypt(PtxtArray ptxt, PubKey publicKey)
-{
-
-    Ctxt result(publicKey);
-    ptxt.encrypt(result);
-    return result;
-}
 int main(int argc, char* argv[])
 {
 
@@ -57,7 +38,7 @@ int main(int argc, char* argv[])
         
          ifstream inCtxtFile;
         inCtxtFile2.open("newVote.json", std::ios::in);
-        if (inCtxtFile2.is_open()) {
+        if (inCtxtFile2.is_open()) {    
           // Read in the ctxt from the file
           helib::Ctxt c2 =
               helib::Ctxt::readFromJSON(inCtxtFile2, publicKey);

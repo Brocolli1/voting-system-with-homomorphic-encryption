@@ -16,62 +16,74 @@
 using namespace helib;
 using namespace std;
 
-
 int main(int argc, char* argv[])
 {
-
-  
- 
   std::ifstream inContextFile;
   inContextFile.open("context.json");
   if (inContextFile.is_open()) {
     // Read in the context from the file
-    helib::Context deserializedContext =
+    helib::Context context =
         helib::Context::readFromJSON(inContextFile);
 
-      ifstream inCtxtFile;
-      inCtxtFile.open("votes.json", std::ios::in);
+
+    std::ifstream inSecretKeyFile;
+    inSecretKeyFile.open("sk.json");
+    if (inSecretKeyFile.is_open()) {
+      // Read in the secret key from the file
+      helib::SecKey deserializedSecretKey =
+          helib::SecKey::readFromJSON(inSecretKeyFile, context);
+
+
+      ifstream inPublicKeyFile;
+  inPublicKeyFile.open("pk.json");
+  if (inPublicKeyFile.is_open()) {
+    // Read in the public key from the file
+    helib::PubKey publicKey =
+        helib::PubKey::readFromJSON(inPublicKeyFile, context);
+    
+
+    ifstream inCtxtFile;
+      inCtxtFile.open("ctxt.json", std::ios::in);
       if (inCtxtFile.is_open()) {
         // Read in the ctxt from the file
         helib::Ctxt c1 =
             helib::Ctxt::readFromJSON(inCtxtFile, publicKey);
         
-         ifstream inCtxtFile;
-        inCtxtFile2.open("newVote.json", std::ios::in);
-        if (inCtxtFile2.is_open()) {    
-          // Read in the ctxt from the file
-          helib::Ctxt c2 =
-              helib::Ctxt::readFromJSON(inCtxtFile2, publicKey);
+        PtxtArray pp4(context);
 
-          Ctxt c3 = c1 + c2;
+        // Next, we decrypt c3, storing the plaintext in p3:
+        pp4.decrypt(c1, deserializedSecretKey);
 
-          ofstream outCtxtFile;
-          outCtxtFile.open("sum.json", std::ios::out);
-          if (outCtxtFile.is_open()) {
-            // Write the ctxt to a file
-            c3.writeToJSON(outCtxtFile);
-            // Close the ofstream
-            outCtxtFile.close();
-          } else {
-            throw std::runtime_error("Could not open file 'ctxt.json'.");
-          }
-                  
+        // Finally, we store the PtxtArray p3 into a standard vector v3:
+        vector<double> v4;
+        pp4.store(v4);
 
-          inCtxtFile2.close();
-        } 
-        else {
-          throw std::runtime_error("Could not open file 'ctxt.json'.");
-        }
+      cout<<v4.back()<<endl;
 
         inCtxtFile.close();
       } 
       else {
         throw std::runtime_error("Could not open file 'ctxt.json'.");
       }
+
+
+    inPublicKeyFile.close();
+  } else {
+    throw std::runtime_error("Could not open file 'pk.json'.");
+  }
+
+      
+      inSecretKeyFile.close();
+      } 
+    else {
+      throw std::runtime_error("Could not open file 'sk.json'.");
+      }
+
     // Close the ifstream
     inContextFile.close();
   } else {
     throw std::runtime_error("Could not open file 'context.json'.");
   }
+
   return 0;
 }

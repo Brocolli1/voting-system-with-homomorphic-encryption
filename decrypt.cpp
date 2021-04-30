@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   inContextFile.open("context.json");
   if (inContextFile.is_open()) {
     // Read in the context from the file
-    helib::Context deserializedContext =
+    helib::Context context =
         helib::Context::readFromJSON(inContextFile);
 
 
@@ -33,7 +33,16 @@ int main(int argc, char* argv[])
       helib::SecKey deserializedSecretKey =
           helib::SecKey::readFromJSON(inSecretKeyFile, context);
 
-      ifstream inCtxtFile;
+
+      ifstream inPublicKeyFile;
+  inPublicKeyFile.open("pk.json");
+  if (inPublicKeyFile.is_open()) {
+    // Read in the public key from the file
+    helib::PubKey publicKey =
+        helib::PubKey::readFromJSON(inPublicKeyFile, context);
+    
+
+    ifstream inCtxtFile;
       inCtxtFile.open("ctxt.json", std::ios::in);
       if (inCtxtFile.is_open()) {
         // Read in the ctxt from the file
@@ -43,7 +52,7 @@ int main(int argc, char* argv[])
         PtxtArray pp4(context);
 
         // Next, we decrypt c3, storing the plaintext in p3:
-        pp4.decrypt(c1, sdeserializedecretKey);
+        pp4.decrypt(c1, deserializedSecretKey);
 
         // Finally, we store the PtxtArray p3 into a standard vector v3:
         vector<double> v4;
@@ -56,6 +65,14 @@ int main(int argc, char* argv[])
       else {
         throw std::runtime_error("Could not open file 'ctxt.json'.");
       }
+
+
+    inPublicKeyFile.close();
+  } else {
+    throw std::runtime_error("Could not open file 'pk.json'.");
+  }
+
+      
       inSecretKeyFile.close();
       } 
     else {
